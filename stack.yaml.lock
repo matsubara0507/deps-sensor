@@ -5,12 +5,33 @@
 
 packages:
 - completed:
+    hackage: binary-instances-1.0.0.1@sha256:70c5759ab4f09cf661f68b72b3543872bc32b61095159d2bfcda8d71dce29b7e,2637
+    pantry-tree:
+      size: 1035
+      sha256: b0d454f73c456c07f02e40002444922ec23278955a222466a8063800aa949c6d
+  original:
+    hackage: binary-instances-1.0.0.1
+- completed:
     hackage: extensible-0.8@sha256:45ca089909ae434329e4d05dc557be94ff04f24c43ff9b915bd90c0599c83211,2911
     pantry-tree:
       size: 2097
       sha256: d602c9d623afd9186a4d55898ef97f0dfb7f81ffbd5bae86e2238b3694d702fb
   original:
     hackage: extensible-0.8
+- completed:
+    hackage: fallible-0.1.0@sha256:0e0032c34120a43bf1d446172162b546e36441c38f620afb24e9d447ed7ce6b6,1312
+    pantry-tree:
+      size: 369
+      sha256: 7de6ccd3ae9fa01eafdb02afdd5a50f1f6babf48aeb31afa21d0329f0fdd19d1
+  original:
+    hackage: fallible-0.1.0
+- completed:
+    hackage: github-0.25@sha256:32e1ede86a04976e06740a5993fab5306c5dbfdd17e96d83b79e53b82195739e,7091
+    pantry-tree:
+      size: 7412
+      sha256: 7cdaaf168051ed364ee9e2e565c63e2257755720fe5bfa287331e06581ea78f1
+  original:
+    hackage: github-0.25
 - completed:
     hackage: membership-0@sha256:3a11d8fd53cb1a76bb9273e6c929bbf9d649f109714bf487abb3143be04ddc81,995
     pantry-tree:
@@ -30,6 +51,19 @@ packages:
       sha256: 689bed307dc233a6c50e01f00295a079dc40a4291700646f3ca423d714ba35fc
   original:
     subdir: mix
+    url: https://github.com/matsubara0507/mix.hs/archive/a0b2b9394c340186c9a8a63808f0db1752ada4ae.tar.gz
+- completed:
+    size: 8476
+    subdir: mix-plugin-github
+    url: https://github.com/matsubara0507/mix.hs/archive/a0b2b9394c340186c9a8a63808f0db1752ada4ae.tar.gz
+    name: mix-plugin-github
+    version: 0.2.0
+    sha256: f879d5d044d8531814a8cd5bbda08ab2a513eb04a150e44526ea0f49961e38a1
+    pantry-tree:
+      size: 386
+      sha256: bf1584e7c1e67bbeb4cb377172f7910c95797d9fb023d372895e0f7727872075
+  original:
+    subdir: mix-plugin-github
     url: https://github.com/matsubara0507/mix.hs/archive/a0b2b9394c340186c9a8a63808f0db1752ada4ae.tar.gz
 snapshots:
 - completed:
