@@ -6,6 +6,11 @@
 
 ## Build
 
+```
+$ elm make elm-src/Main.elm --output assets/main.js --optimize
+$ stack build
+```
+
 ### Docker
 
 ```

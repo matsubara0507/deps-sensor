@@ -31,8 +31,10 @@ displayDeps = do
 generateHtml :: FilePath -> RIO Env ()
 generateHtml dir = do
   MixLogger.logDebug (fromString $ "generate HTML/JavaScript to " ++ dir)
-  MixShell.exec $ Shell.mkdir_p dir
+  MixShell.exec $ Shell.mkdir_p (dir ++ "/static")
   writeFileBinary (dir ++ "/index.html") Assets.indexHtml
+  writeFileBinary (dir ++ "/static/index.js") Assets.indexJS
+  writeFileBinary (dir ++ "/static/main.js") Assets.mainJS
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command.\n"
