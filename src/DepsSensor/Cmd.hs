@@ -8,11 +8,14 @@ import qualified Data.ByteArray.Encoding as BA
 import           Data.Extensible
 import           Data.Fallible
 import qualified Data.Yaml               as Y
+import qualified DepsSensor.Assets       as Assets
 import           DepsSensor.Deps         as Deps
 import           DepsSensor.Env
 import qualified GitHub
 import qualified Mix.Plugin.GitHub       as MixGitHub
 import qualified Mix.Plugin.Logger       as MixLogger
+import qualified Mix.Plugin.Shell        as MixShell
+import qualified Shelly                  as Shell
 
 displayDeps :: RIO Env ()
 displayDeps = do
@@ -26,8 +29,10 @@ displayDeps = do
       MixLogger.logInfo (display $ J.encodeToLazyText dependencies)
 
 generateHtml :: FilePath -> RIO Env ()
-generateHtml path =
-  MixLogger.logDebug (fromString $ "generate HTML/JavaScript to " ++ path)
+generateHtml dir = do
+  MixLogger.logDebug (fromString $ "generate HTML/JavaScript to " ++ dir)
+  MixShell.exec $ Shell.mkdir_p dir
+  writeFileBinary (dir ++ "/index.html") Assets.indexHtml
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command.\n"

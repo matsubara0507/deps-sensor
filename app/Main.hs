@@ -63,6 +63,7 @@ runCmd opts path = do
             <: #github <@=> MixGitHub.buildPlugin gToken
             <: #config <@=> MixConfig.buildPlugin config
             <: #output <@=> pure (if opts ^. #json then JSON else Simple)
+            <: #work   <@=> pure "."
             <: nil
   case opts ^. #generate of
     Just p  -> Mix.run plugin $ Cmd.generateHtml p

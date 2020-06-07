@@ -45,10 +45,13 @@ dependencies:
 - aeson
 - extensible >= 0.6
 - fallible
+- file-embed
 - github >= 0.24
 - memory
 - mix
 - mix-plugin-github
+- mix-plugin-shell
+- shelly
 - yaml
 
 library:

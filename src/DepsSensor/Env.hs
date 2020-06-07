@@ -11,6 +11,7 @@ type Env = Record
    , "github" >: MixGitHub.Token
    , "config" >: Config
    , "output" >: Output
+   , "work"   >: FilePath
    ]
 
 data Output = Simple | JSON

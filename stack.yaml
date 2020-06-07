@@ -12,6 +12,7 @@ extra-deps:
   subdirs:
   - mix
   - mix-plugin-github
+  - mix-plugin-shell
 
 docker:
   repo: matsubara0507/stack-build
