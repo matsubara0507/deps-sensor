@@ -6,7 +6,7 @@ import           RIO
 import           Configuration.Dotenv   (defaultConfig, loadFile)
 import           Data.Extensible
 import           Data.Extensible.GetOpt
-import           DepsSensor.Cmd
+import qualified DepsSensor.Cmd         as Cmd
 import           DepsSensor.Config
 import           DepsSensor.Env         (Output (..))
 import           GetOpt                 (withGetOpt')
@@ -20,21 +20,23 @@ import qualified Version
 main :: IO ()
 main = withGetOpt' "[options] [config-file]" opts $ \r args usage -> do
   _ <- tryIO $ loadFile defaultConfig
-  if | r ^. #help    -> hPutBuilder stdout (fromString usage)
-     | r ^. #version -> hPutBuilder stdout (Version.build version <> "\n")
-     | otherwise     -> runCmd r (listToMaybe args)
+  if | r ^. #help              -> hPutBuilder stdout (fromString usage)
+     | r ^. #version           -> hPutBuilder stdout (Version.build version <> "\n")
+     | otherwise               -> runCmd r (listToMaybe args)
   where
-    opts = #help    @= helpOpt
-        <: #version @= versionOpt
-        <: #verbose @= verboseOpt
-        <: #json    @= jsonOpt
+    opts = #help     @= helpOpt
+        <: #version  @= versionOpt
+        <: #verbose  @= verboseOpt
+        <: #json     @= jsonOpt
+        <: #generate @= generateOpt
         <: nil
 
 type Options = Record
-  '[ "help"    >: Bool
-   , "version" >: Bool
-   , "verbose" >: Bool
-   , "json"    >: Bool
+  '[ "help"     >: Bool
+   , "version"  >: Bool
+   , "verbose"  >: Bool
+   , "json"     >: Bool
+   , "generate" >: Maybe FilePath
    ]
 
 helpOpt :: OptDescr' Bool
@@ -49,6 +51,9 @@ verboseOpt = optFlag ['v'] ["verbose"] "Enable verbose mode: verbosity level \"d
 jsonOpt :: OptDescr' Bool
 jsonOpt = optFlag [] ["json"] "Show result as JSON format."
 
+generateOpt :: OptDescr' (Maybe FilePath)
+generateOpt = optLastArg [] ["generate"] "PATH" "Generate HTML/JavaScript files to PATH"
+
 runCmd :: Options -> Maybe FilePath -> IO ()
 runCmd opts path = do
   gToken <- liftIO $ fromString <$> getEnv "GH_TOKEN"
@@ -59,7 +64,9 @@ runCmd opts path = do
             <: #config <@=> MixConfig.buildPlugin config
             <: #output <@=> pure (if opts ^. #json then JSON else Simple)
             <: nil
-  Mix.run plugin cmd
+  case opts ^. #generate of
+    Just p  -> Mix.run plugin $ Cmd.generateHtml p
+    Nothing -> Mix.run plugin Cmd.displayDeps
   where
     logOpts = #handle @= stdout
            <: #verbose @= (opts ^. #verbose)

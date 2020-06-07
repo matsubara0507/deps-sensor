@@ -14,8 +14,8 @@ import qualified GitHub
 import qualified Mix.Plugin.GitHub       as MixGitHub
 import qualified Mix.Plugin.Logger       as MixLogger
 
-cmd :: RIO Env ()
-cmd = do
+displayDeps :: RIO Env ()
+displayDeps = do
   repositories <- asks (view #repositories . view #config)
   dependencies <- catMaybes <$> mapM buildDeps repositories
   asks (view #output) >>= \case
@@ -24,6 +24,10 @@ cmd = do
 
     JSON ->
       MixLogger.logInfo (display $ J.encodeToLazyText dependencies)
+
+generateHtml :: FilePath -> RIO Env ()
+generateHtml path =
+  MixLogger.logDebug (fromString $ "generate HTML/JavaScript to " ++ path)
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command.\n"
