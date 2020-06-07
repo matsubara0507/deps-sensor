@@ -3,11 +3,12 @@ module DepsSensor.Cmd where
 import           RIO
 import qualified RIO.Text                as T
 
+import qualified Data.Aeson.Text         as J
 import qualified Data.ByteArray.Encoding as BA
 import           Data.Extensible
 import           Data.Fallible
 import qualified Data.Yaml               as Y
-import           DepsSensor.Deps
+import           DepsSensor.Deps         as Deps
 import           DepsSensor.Env
 import qualified GitHub
 import qualified Mix.Plugin.GitHub       as MixGitHub
@@ -16,9 +17,13 @@ import qualified Mix.Plugin.Logger       as MixLogger
 cmd :: RIO Env ()
 cmd = do
   repositories <- asks (view #repositories . view #config)
-  deps <- catMaybes <$> mapM buildDeps repositories
-  for_ deps $ \dep ->
-    MixLogger.logInfo (display $ dep ^. #repository <> ": " <> dep ^. #snapshot)
+  dependencies <- catMaybes <$> mapM buildDeps repositories
+  asks (view #output) >>= \case
+    Simple ->
+      for_ dependencies (MixLogger.logInfo . display . Deps.simpleDisplay)
+
+    JSON ->
+      MixLogger.logInfo (display $ J.encodeToLazyText dependencies)
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command.\n"

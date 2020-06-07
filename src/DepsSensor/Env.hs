@@ -10,4 +10,7 @@ type Env = Record
   '[ "logger" >: LogFunc
    , "github" >: MixGitHub.Token
    , "config" >: Config
+   , "output" >: Output
    ]
+
+data Output = Simple | JSON

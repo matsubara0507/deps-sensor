@@ -8,6 +8,7 @@ import           Data.Extensible
 import           Data.Extensible.GetOpt
 import           DepsSensor.Cmd
 import           DepsSensor.Config
+import           DepsSensor.Env         (Output (..))
 import           GetOpt                 (withGetOpt')
 import           Mix
 import           Mix.Plugin.Config      as MixConfig
@@ -26,12 +27,14 @@ main = withGetOpt' "[options] [config-file]" opts $ \r args usage -> do
     opts = #help    @= helpOpt
         <: #version @= versionOpt
         <: #verbose @= verboseOpt
+        <: #json    @= jsonOpt
         <: nil
 
 type Options = Record
   '[ "help"    >: Bool
    , "version" >: Bool
    , "verbose" >: Bool
+   , "json"    >: Bool
    ]
 
 helpOpt :: OptDescr' Bool
@@ -43,6 +46,9 @@ versionOpt = optFlag [] ["version"] "Show version"
 verboseOpt :: OptDescr' Bool
 verboseOpt = optFlag ['v'] ["verbose"] "Enable verbose mode: verbosity level \"debug\""
 
+jsonOpt :: OptDescr' Bool
+jsonOpt = optFlag [] ["json"] "Show result as JSON format."
+
 runCmd :: Options -> Maybe FilePath -> IO ()
 runCmd opts path = do
   gToken <- liftIO $ fromString <$> getEnv "GH_TOKEN"
@@ -51,6 +57,7 @@ runCmd opts path = do
              $ #logger <@=> MixLogger.buildPlugin logOpts
             <: #github <@=> MixGitHub.buildPlugin gToken
             <: #config <@=> MixConfig.buildPlugin config
+            <: #output <@=> pure (if opts ^. #json then JSON else Simple)
             <: nil
   Mix.run plugin cmd
   where
