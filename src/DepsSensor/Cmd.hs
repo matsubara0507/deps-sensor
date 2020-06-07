@@ -7,6 +7,7 @@ import qualified Data.ByteArray.Encoding as BA
 import           Data.Extensible
 import           Data.Fallible
 import qualified Data.Yaml               as Y
+import           DepsSensor.Deps
 import           DepsSensor.Env
 import qualified GitHub
 import qualified Mix.Plugin.GitHub       as MixGitHub
@@ -15,17 +16,26 @@ import qualified Mix.Plugin.Logger       as MixLogger
 cmd :: RIO Env ()
 cmd = do
   repositories <- asks (view #repositories . view #config)
-  for_ repositories $ \repo -> evalContT $ do
-    let (owner, name) = T.drop 1 <$> T.break (== '/') repo
-    content   <- lift (fetchStackFileContent owner name) !?? warn repo "stack.yaml is not found"
-    stackFile <- decodeStackFile content ??= warn repo
-    resolver  <- toResolver stackFile ??? warn repo "undefined resolver"
-    MixLogger.logInfo (display $ repo <> ": " <> resolver)
-  where
-    warn r msg = exit $ MixLogger.logWarn (display $ T.pack msg <> ": " <> r)
+  deps <- catMaybes <$> mapM buildDeps repositories
+  for_ deps $ \dep ->
+    MixLogger.logInfo (display $ dep ^. #repository <> ": " <> dep ^. #snapshot)
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command.\n"
+
+buildDeps :: Text -> RIO Env (Maybe Deps)
+buildDeps repo = evalContT $ do
+  content   <- lift (fetchStackFileContent owner name) !?? warn repo "stack.yaml is not found"
+  stackFile <- decodeStackFile content ??= warn repo
+  resolver  <- toResolver stackFile ??? warn repo "undefined resolver"
+  pure $ Just $ #repository @= repo
+             <: #snapshot   @= resolver
+             <: nil
+  where
+    (owner, name) = T.drop 1 <$> T.break (== '/') repo
+    warn r msg = exit $ do
+      MixLogger.logWarn (display $ T.pack msg <> ": " <> r)
+      pure Nothing
 
 type StackFile = Record
   '[ "resolver" >: Maybe Text
