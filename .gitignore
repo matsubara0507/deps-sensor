@@ -4,3 +4,4 @@
 bin/*
 !.gitkeep
 elm-stuff
+bazel-*

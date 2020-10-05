@@ -1,0 +1,82 @@
+# Set all target’s visibility in this package to "public".
+package(default_visibility = ["//visibility:public"])
+
+# Load rules_haskell rules.
+load(
+    "@rules_haskell//haskell:defs.bzl",
+    "haskell_library",
+    "haskell_binary",
+)
+
+load(
+    "//:build/common.bzl",
+    "GHC_FLAGS",
+)
+
+# You can specify what kind of compilation mode you want by providing
+# --compilation_mode=MODE to `bazel build`, where MODE is one of
+# 'fastbuild', 'dbg', or 'opt'. We declare targets corresponding to this
+# setting, which are used in common.bzl to vary compiler flags based
+# on the compilation mode. Note that you can also just write `-c opt`
+# if you're not into writing out compilation_mode.
+
+config_setting(
+    name = "release",
+    values = {"compilation_mode": "opt"},
+)
+
+config_setting(
+    name = "development",
+    values = {"compilation_mode": "fastbuild"},
+)
+
+config_setting(
+    name = "debug",
+    values = {"compilation_mode": "dbg"},
+)
+
+# You can add your own libraries with haskell_library.
+haskell_library(
+    name = "deps-sensor",
+    src_strip_prefix = "src",
+    srcs = glob(['src/**/*.hs']),
+    extra_srcs = [
+        'assets/index.html',
+        'assets/index.js',
+        'assets/main.js',
+    ],
+    compiler_flags = GHC_FLAGS,
+    deps = [
+        "@stackage//:base",
+        "@stackage//:rio",
+        "@stackage//:aeson",
+        "@stackage//:extensible",
+        "@stackage//:fallible",
+        "@stackage//:file-embed",
+        "@stackage//:github",
+        "@stackage//:memory",
+        "@stackage//:mix",
+        "@stackage//:mix-plugin-github",
+        "@stackage//:mix-plugin-shell",
+        "@stackage//:shelly",
+        "@stackage//:yaml",
+    ],
+)
+
+# An example binary using the Prelude module from the
+# GHC base package, and zlib from stackage, to print the hello world.
+haskell_binary(
+    name = "exe",
+    srcs = glob(["app/**/*.hs"]),
+    deps = [
+        ":deps-sensor",
+        "@stackage//:base",
+        "@stackage//:rio",
+        "@stackage//:extensible",
+        "@stackage//:mix",
+        "@stackage//:mix-plugin-github",
+        "@stackage//:mix-plugin-shell",
+        "@stackage//:githash",
+        "@stackage//:dotenv",
+    ],
+)
