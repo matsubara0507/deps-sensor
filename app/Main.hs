@@ -6,6 +6,7 @@ import           RIO
 import           Configuration.Dotenv   (defaultConfig, loadFile)
 import           Data.Extensible
 import           Data.Extensible.GetOpt
+import qualified Data.Version           as Version
 import qualified DepsSensor.Cmd         as Cmd
 import           DepsSensor.Config
 import           DepsSensor.Env         (Output (..))
@@ -15,14 +16,13 @@ import           Mix.Plugin.Config      as MixConfig
 import qualified Mix.Plugin.GitHub      as MixGitHub
 import           Mix.Plugin.Logger      as MixLogger
 import           System.Environment     (getEnv)
-import qualified Version
 
 main :: IO ()
 main = withGetOpt' "[options] [config-file]" opts $ \r args usage -> do
   _ <- tryIO $ loadFile defaultConfig
-  if | r ^. #help              -> hPutBuilder stdout (fromString usage)
-     | r ^. #version           -> hPutBuilder stdout (Version.build version <> "\n")
-     | otherwise               -> runCmd r (listToMaybe args)
+  if | r ^. #help    -> hPutBuilder stdout (fromString usage)
+     | r ^. #version -> hPutBuilder stdout (fromString $ Version.showVersion version <> "\n")
+     | otherwise     -> runCmd r (listToMaybe args)
   where
     opts = #help     @= helpOpt
         <: #version  @= versionOpt
