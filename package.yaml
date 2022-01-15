@@ -56,6 +56,9 @@ dependencies:
 
 library:
   source-dirs: src
+  when:
+  - condition: false
+    other-modules: Paths_deps_sensor
 
 executables:
   deps-sensor:
@@ -65,6 +68,9 @@ executables:
     - deps-sensor
     - githash
     - dotenv
+    when:
+    - condition: false
+      other-modules: Paths_deps_sensor
 
 tests:
   deps-sensor-test:

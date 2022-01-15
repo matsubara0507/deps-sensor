@@ -1,6 +1,7 @@
+{-# LANGUAGE CPP #-}
+
 module Main where
 
-import           Paths_deps_sensor      (version)
 import           RIO
 
 import           Configuration.Dotenv   (defaultConfig, loadFile)
@@ -15,13 +16,12 @@ import           Mix.Plugin.Config      as MixConfig
 import qualified Mix.Plugin.GitHub      as MixGitHub
 import           Mix.Plugin.Logger      as MixLogger
 import           System.Environment     (getEnv)
-import qualified Version
 
 main :: IO ()
 main = withGetOpt' "[options] [config-file]" opts $ \r args usage -> do
   _ <- tryIO $ loadFile defaultConfig
   if | r ^. #help              -> hPutBuilder stdout (fromString usage)
-     | r ^. #version           -> hPutBuilder stdout (Version.build version <> "\n")
+     | r ^. #version           -> hPutBuilder stdout (fromString VERSION_deps_sensor <> "\n")
      | otherwise               -> runCmd r (listToMaybe args)
   where
     opts = #help     @= helpOpt
