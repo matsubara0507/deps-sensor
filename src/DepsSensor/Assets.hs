@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP             #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module DepsSensor.Assets where
@@ -13,4 +14,8 @@ indexJS :: ByteString
 indexJS = $(embedFile "assets/index.js")
 
 mainJS :: ByteString
+#ifdef MAINJS_FILE
+mainJS = $(embedFile MAINJS_FILE)
+#else
 mainJS = $(embedFile "assets/main.js")
+#endif

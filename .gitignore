@@ -4,3 +4,8 @@
 bin/*
 !.gitkeep
 elm-stuff
+
+bazel-bin
+bazel-deps-sensor
+bazel-out
+bazel-testlogs

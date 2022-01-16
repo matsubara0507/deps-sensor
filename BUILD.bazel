@@ -1,0 +1,241 @@
+load(
+    "@rules_elm//elm:def.bzl",
+    "elm_dependencies",
+    "elm_make",
+)
+
+elm_dependencies(
+    name = "deps",
+    elm_json = "elm.json",
+)
+
+elm_make(
+    name = "mainjs",
+    srcs = glob(["elm-src/**"]),
+    elm_home = ":deps",
+    elm_json = "elm.json",
+    main = "elm-src/Main.elm",
+    output = "static/javascript/main.js",
+    optimize = True,
+    visibility = ["//visibility:public"],
+)
+
+load("@rules_haskell//haskell:defs.bzl", "haskell_binary", "haskell_library", "haskell_test")
+load(
+    "@bazel_gazelle//:def.bzl",
+    "DEFAULT_LANGUAGES",
+    "gazelle",
+    "gazelle_binary",
+)
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle_binary",
+)
+
+gazelle(
+    name = "gazelle-update-repos",
+    command = "update-repos",
+    extra_args = [
+        "-lang",
+        "gazelle_cabal",
+        "stackage",
+    ],
+    gazelle = ":gazelle_binary",
+)
+
+gazelle_binary(
+    name = "gazelle_binary",
+    languages = DEFAULT_LANGUAGES + ["@io_tweag_gazelle_cabal//gazelle_cabal"],
+)
+
+# rule generated from deps-sensor.cabal by gazelle_cabal
+haskell_library(
+    name = "deps-sensor",
+    srcs = [
+        "src/DepsSensor/Assets.hs",
+        "src/DepsSensor/Cmd.hs",
+        "src/DepsSensor/Config.hs",
+        "src/DepsSensor/Deps.hs",
+        "src/DepsSensor/Env.hs",
+    ],
+    compiler_flags = [
+        "-DMAINJS_FILE=\"$(execpath :mainjs)\"",  # keep
+        "-DVERSION_deps_sensor=\"0.1.0\"",
+        "-XNoImplicitPrelude",
+        "-XConstraintKinds",
+        "-XDataKinds",
+        "-XFlexibleContexts",
+        "-XFlexibleInstances",
+        "-XGeneralizedNewtypeDeriving",
+        "-XLambdaCase",
+        "-XMultiWayIf",
+        "-XNumericUnderscores",
+        "-XOverloadedLabels",
+        "-XOverloadedStrings",
+        "-XPolyKinds",
+        "-XRankNTypes",
+        "-XStandaloneDeriving",
+        "-XTypeFamilies",
+        "-XTypeOperators",
+        "-XTypeSynonymInstances",
+        "-Wall",
+        "-Wcompat",
+        "-Wincomplete-record-updates",
+        "-Wincomplete-uni-patterns",
+        "-Wredundant-constraints",
+    ],
+    extra_srcs = [
+        "assets/index.html",
+        "assets/index.js",
+        ":mainjs",
+    ],
+    version = "0.1.0",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@stackage//:aeson",
+        "@stackage//:base",
+        "@stackage//:extensible",
+        "@stackage//:fallible",
+        "@stackage//:file-embed",
+        "@stackage//:github",
+        "@stackage//:memory",
+        "@stackage//:mix",
+        "@stackage//:mix-plugin-github",
+        "@stackage//:mix-plugin-shell",
+        "@stackage//:rio",
+        "@stackage//:shelly",
+        "@stackage//:yaml",
+    ],
+)
+
+# rule generated from deps-sensor.cabal by gazelle_cabal
+haskell_binary(
+    name = "deps-sensor-binary",
+    srcs = [
+        "app/GetOpt.hs",
+        "app/Main.hs",
+    ],
+    compiler_flags = [
+        "-DVERSION_deps_sensor=\"0.1.0\"",
+        "-XNoImplicitPrelude",
+        "-XConstraintKinds",
+        "-XDataKinds",
+        "-XFlexibleContexts",
+        "-XFlexibleInstances",
+        "-XGeneralizedNewtypeDeriving",
+        "-XLambdaCase",
+        "-XMultiWayIf",
+        "-XNumericUnderscores",
+        "-XOverloadedLabels",
+        "-XOverloadedStrings",
+        "-XPolyKinds",
+        "-XRankNTypes",
+        "-XStandaloneDeriving",
+        "-XTypeFamilies",
+        "-XTypeOperators",
+        "-XTypeSynonymInstances",
+        "-Wall",
+        "-Wcompat",
+        "-Wincomplete-record-updates",
+        "-Wincomplete-uni-patterns",
+        "-Wredundant-constraints",
+    ],
+    version = "0.1.0",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":deps-sensor",
+        "@stackage//:aeson",
+        "@stackage//:base",
+        "@stackage//:dotenv",
+        "@stackage//:extensible",
+        "@stackage//:fallible",
+        "@stackage//:file-embed",
+        "@stackage//:githash",
+        "@stackage//:github",
+        "@stackage//:memory",
+        "@stackage//:mix",
+        "@stackage//:mix-plugin-github",
+        "@stackage//:mix-plugin-shell",
+        "@stackage//:rio",
+        "@stackage//:shelly",
+        "@stackage//:yaml",
+    ],
+)
+
+# rule generated from deps-sensor.cabal by gazelle_cabal
+haskell_test(
+    name = "deps-sensor-test",
+    srcs = ["test/Spec.hs"],
+    compiler_flags = [
+        "-DVERSION_deps_sensor=\"0.1.0\"",
+        "-XNoImplicitPrelude",
+        "-XConstraintKinds",
+        "-XDataKinds",
+        "-XFlexibleContexts",
+        "-XFlexibleInstances",
+        "-XGeneralizedNewtypeDeriving",
+        "-XLambdaCase",
+        "-XMultiWayIf",
+        "-XNumericUnderscores",
+        "-XOverloadedLabels",
+        "-XOverloadedStrings",
+        "-XPolyKinds",
+        "-XRankNTypes",
+        "-XStandaloneDeriving",
+        "-XTypeFamilies",
+        "-XTypeOperators",
+        "-XTypeSynonymInstances",
+        "-Wall",
+        "-Wcompat",
+        "-Wincomplete-record-updates",
+        "-Wincomplete-uni-patterns",
+        "-Wredundant-constraints",
+    ],
+    version = "0.1.0",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":deps-sensor",
+        "@stackage//:aeson",
+        "@stackage//:base",
+        "@stackage//:extensible",
+        "@stackage//:fallible",
+        "@stackage//:file-embed",
+        "@stackage//:github",
+        "@stackage//:memory",
+        "@stackage//:mix",
+        "@stackage//:mix-plugin-github",
+        "@stackage//:mix-plugin-shell",
+        "@stackage//:rio",
+        "@stackage//:shelly",
+        "@stackage//:tasty",
+        "@stackage//:tasty-hspec",
+        "@stackage//:yaml",
+    ],
+)
+
+# Docker Image
+
+load(
+    "@rules_pkg//:pkg.bzl",
+    "pkg_tar",
+)
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_image",
+    "container_push",
+)
+
+pkg_tar(
+    name = "bin",
+    srcs = [":deps-sensor-binary"],
+    mode = "0755",
+    package_dir = "/usr/local/bin",
+)
+
+container_image(
+    name = "image",
+    base = "@ubuntu_for_haskell//image",
+    entrypoint = ["/usr/local/bin/deps-sensor"],
+    tars = [":bin"],
+)

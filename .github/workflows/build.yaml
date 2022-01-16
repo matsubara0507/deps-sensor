@@ -1,0 +1,39 @@
+name: Build Image
+
+on:
+  pull_request: null
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04]
+        ghc: ["8.10.7"]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Cache Bazel
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/bazel
+        key: ${{ runner.os }}-${{ hashFiles('WORKSPACE') }}
+
+    - name: Build binary
+      run: |
+        bazelisk build //:deps-sensor-binary
+        bazel-bin/deps-sensor-binary --version
+        bazel-bin/deps-sensor-binary --help
+
+    - name: Run test
+      run: bazelisk test //...
+
+    - name: Build image
+      run: bazelisk build //:image
