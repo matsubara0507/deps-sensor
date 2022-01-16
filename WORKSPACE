@@ -1,4 +1,4 @@
-workspace(name = "deps-sencor")
+workspace(name = "deps-sensor")
 
 load(
     "@bazel_tools//tools/build_defs/repo:http.bzl",
